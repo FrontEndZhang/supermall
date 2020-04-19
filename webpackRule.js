@@ -68,7 +68,7 @@
             loader: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\node_modules\\cache-loader\\dist\\cjs.js',
             options: {
               cacheDirectory: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\node_modules\\.cache\\vue-loader',
-              cacheIdentifier: '10021c56'
+              cacheIdentifier: '0ab51346'
             }
           },
           /* config.module.rule('vue').use('vue-loader') */
@@ -79,7 +79,7 @@
                 whitespace: 'condense'
               },
               cacheDirectory: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\node_modules\\.cache\\vue-loader',
-              cacheIdentifier: '10021c56'
+              cacheIdentifier: '0ab51346'
             }
           }
         ]
@@ -1157,7 +1157,7 @@
             loader: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\node_modules\\cache-loader\\dist\\cjs.js',
             options: {
               cacheDirectory: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\node_modules\\.cache\\babel-loader',
-              cacheIdentifier: '30cc06c2'
+              cacheIdentifier: '4eb8c98b'
             }
           },
           /* config.module.rule('js').use('babel-loader') */
@@ -1258,7 +1258,8 @@
       {
         title: 'supermarket',
         templateParameters: function () { /* omitted long function */ },
-        template: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\public\\index.html'
+        template: 'D:\\VScode_project\\学习vue\\12-Project\\supermall\\public\\index.html',
+        minify: false
       }
     ),
     /* config.plugin('preload') */

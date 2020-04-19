@@ -5,8 +5,11 @@ module.exports = {
             .set('components', '@/components')
             .set('common', '@/common')
             .set('network', '@/network')
-            .set('views', '@/views'),
-        // 移除 prefetch 插件(懒加载不得行的问题)    
-        config.plugins.delete('prefetch')
+            .set('views', '@/views')
+        //  禁用压缩minify，解决index文件没有引号
+        config.plugin("html").tap(args => {
+            args[0].minify = false;
+            return args;
+        })
     }
 }
