@@ -4,13 +4,31 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <scroll class="content">
-      <home-swiper :banners="banners"></home-swiper>
+    <tab-control 
+          ref="tabControl"
+          class="tab-control-top" 
+          :titles="['流行','精品','新款']"
+           @tabClick="tabClick"
+           v-show="isShowBackTop"></tab-control>
+    <scroll
+      class="content"
+      ref="scroll"
+      @scroll="contentScroll"
+      :probe-type="3"
+      :pull-up-load="true"
+      @pullingUp="loadMore()">
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <feature-view></feature-view>
-      <tab-control :titles="['流行','精品','新款']" @tabClick="tabClick"></tab-control>
+      <tab-control 
+          ref="tabControl" 
+          :titles="['流行','精品','新款']"
+           @tabClick="tabClick"
+          ></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </scroll>
+
+    <back-top v-show="isShowBackTop" @click.native="backClick()"></back-top>
   </div>
 </template>
 
@@ -18,8 +36,10 @@
 // 组件
 import NavBar from "components/common/navbar/NavBar";
 import Scroll from "components/common/scroll/Scroll";
+
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
+import BackTop from "components/content/backtop/BackTop";
 
 import HomeSwiper from "views/home/childComps/HomeSwiper";
 import HomeRecommendView from "views/home/childComps/HomeRecommendView";
@@ -27,6 +47,7 @@ import FeatureView from "views/home/childComps/FeatureView";
 
 // js函数或者库
 import { getHomeMultidata, getHomeGoods } from "network/home";
+import {debounce} from "common/utils/debounce"
 
 export default {
   name: "Home",
@@ -39,7 +60,9 @@ export default {
         new: { page: 0, list: [] },
         sell: { page: 0, list: [] }
       },
-      currentType: "pop"
+      currentType: "pop",
+      isShowBackTop: false,
+      tabOffsetTop : 0,
     };
   },
   methods: {
@@ -61,6 +84,8 @@ export default {
         .then(res => {
           this.goods[type].list.push(...res.data.data.list);
           this.goods[type].page += 1;
+
+          // this.finishPullUp()
         })
         .catch(err => {
           console.log(err);
@@ -82,6 +107,30 @@ export default {
           this.currentType = "pop";
           break;
       }
+    },
+
+    // 4.backtop,回到顶部
+    backClick() {
+      // 获取到scroll组件，调用其 scrollTo 方法
+      this.$refs.scroll.scrollTo(0, 0, 1000);
+    },
+    // 5. 是否显现 backtop 按钮 ，还有tabcontrol吸顶
+    contentScroll(position) {
+      // backtop 按钮
+      this.isShowBackTop = -position.y > 1000;
+
+      // tabcontrol吸顶
+      this.isShowBackTop = (-position.y) > this.tabOffsetTop
+    },
+    // 下拉刷新
+    loadMore() {
+      this.getHomeGoods(this.currentType)
+    },
+    finishPullUp() {
+      this.$refs.scroll.refresh();
+    },
+    swiperImageLoad(){
+        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
     }
   },
   computed: {
@@ -96,7 +145,8 @@ export default {
     FeatureView,
     TabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop
   },
   created() {
     this.getHomeMultidata();
@@ -106,13 +156,19 @@ export default {
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
 
-    // 监听item图片加载完成
-    this.$bus.$on('itemImageLoad',()=>{
-      console.log(1111);
-      
-    })
-  },
 
+  },
+  mounted() {
+    const refresh = debounce(this.$refs.scroll.refresh,200)
+    
+    // 监听item图片加载完成
+    this.$bus.$on("itemImageLoad", () => {
+
+    });
+
+    // 3.赋值
+    this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
+  }
 };
 </script>
 
@@ -140,6 +196,9 @@ export default {
   left: 0;
   right: 0;
   overflow: hidden;
+}
+.tab-control-top {
+  z-index: 3;
 }
 /* .content {
     height:calc(100% - 93px);
